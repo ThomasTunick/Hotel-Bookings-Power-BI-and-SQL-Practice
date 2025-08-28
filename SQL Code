@@ -1,0 +1,39 @@
+/*
+SELECT COUNT(*) FROM hotel_bookings;
+
+SELECT AVG (adr) AS avg_adr FROM hotel_bookings;
+
+SELECT
+	COUNT(*) AS total_bookings,
+	SUM(CASE WHEN is_canceled = 1 THEN 1 ELSE 0 END) AS canceled,
+	ROUND(10.0 * SUM(CASE WHEN is_canceled = 1 THEN 1 ELSE 0 END) / COUNT(*), 2) a
+FROM hotel_bookings;
+
+
+CREATE VIEW clean_bookings AS 
+SELECT *,
+		adr * (stays_in_weekend_nights + stays_in_week_nights) AS revenue_estimate
+FROM hotel_bookings
+WHERE is_canceled = 0;
+
+GO 
+
+SELECT TOP 10 * FROM clean_bookings;
+*/
+
+-- Total bookings by country
+SELECT country, COUNT(*) AS total_bookings
+FROM clean_bookings
+GROUP BY country
+ORDER BY total_bookings DESC;
+
+-- Average revenue by customer type
+SELECT customer_type, AVG(revenue_estimate) AS avg_revenue
+FROM clean_bookings
+GROUP BY customer_type;
+
+-- Which months bring the most revenue?
+SELECT arrival_date_month, SUM(revenue_estimate) AS total_revenue
+FROM clean_bookings
+GROUP BY arrival_date_month
+ORDER BY total_revenue DESC;
